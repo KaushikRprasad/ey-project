@@ -1,0 +1,135 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Expense Detail</title>
+    <link rel="stylesheet" href="{% static 'invoices/list/css/style.css' %}?v=3">
+</head>
+
+<body style="background:#fff;">
+
+<div class="edit-container">
+
+    <!-- HEADER -->
+    <div class="edit-header">
+        <h1>Expense Detail</h1>
+        <a href="{% url 'expense_list' %}" class="back-link">← Back</a>
+    </div>
+
+    <!-- STATUS BADGE -->
+    <div style="margin-bottom:15px;">
+        {% if expense.status == "pending" %}
+            <span class="status-badge pending">Pending Approval</span>
+        {% elif expense.status == "approved" %}
+            <span class="status-badge approved">Approved</span>
+        {% elif expense.status == "rejected" %}
+            <span class="status-badge rejected">Rejected</span>
+        {% elif expense.status == "paid" %}
+            <span class="status-badge success">Paid</span>
+        {% endif %}
+    </div>
+
+    <!-- CREATED INFO (ADMIN & ACCOUNTANT ONLY) -->
+    {% if request.user.role == "admin" or request.user.role == "superadmin" or request.user.role == "accountant" %}
+    <div class="info-box created">
+        Created by 
+        <strong>
+            {{ expense.user.get_full_name|default:expense.user.username }}
+        </strong><br>
+        {{ expense.created_at|date:"d M Y H:i" }}
+    </div>
+    {% endif %}
+
+    <!-- APPROVAL INFO -->
+    {% if expense.status == "approved" or expense.status == "paid" %}
+        <div class="info-box approved">
+            Approved by <strong>{{ expense.approved_by.username }}</strong><br>
+            {{ expense.approved_at|date:"d M Y H:i" }}
+        </div>
+    {% elif expense.status == "rejected" %}
+        <div class="info-box rejected">
+            Rejected by <strong>{{ expense.rejected_by.username }}</strong><br>
+            {{ expense.rejected_at|date:"d M Y H:i" }}
+        </div>
+    {% endif %}
+
+    <div class="edit-card">
+
+        <form method="POST">
+            {% csrf_token %}
+
+            <!-- BASIC DETAILS -->
+            <div class="detail-section">
+                <h3 class="section-title">Basic Information</h3>
+
+                <label>Title</label>
+                <input type="text"
+                       name="title"
+                       value="{{ expense.title }}"
+                       class="edit-field"
+                       {% if expense.status != "pending" %}readonly{% endif %}>
+
+                <label>Date</label>
+                <input type="date"
+                       value="{{ expense.created_at|date:'Y-m-d' }}"
+                       class="edit-field"
+                       readonly>
+            </div>
+
+            <!-- FINANCIAL DETAILS -->
+            <div class="detail-section">
+                <h3 class="section-title">Financial Information</h3>
+
+                <label>Amount (₹)</label>
+                <input type="number"
+                       step="0.01"
+                       name="amount"
+                       value="{{ expense.amount }}"
+                       class="edit-field"
+                       {% if expense.status != "pending" %}readonly{% endif %}>
+
+                <label>Category</label>
+                <select name="category"
+                        class="edit-field"
+                        {% if expense.status != "pending" %}disabled{% endif %}>
+                    <option value="Personal" {% if expense.category == "Personal" %}selected{% endif %}>Personal</option>
+                    <option value="Business" {% if expense.category == "Business" %}selected{% endif %}>Business</option>
+                    <option value="Other" {% if expense.category == "Other" %}selected{% endif %}>Other</option>
+                </select>
+
+                <label>Payment Method</label>
+                <select name="payment_method"
+                        class="edit-field"
+                        {% if expense.status != "pending" %}disabled{% endif %}>
+                    <option value="cash" {% if expense.payment_method == "cash" %}selected{% endif %}>Cash</option>
+                    <option value="upi" {% if expense.payment_method == "upi" %}selected{% endif %}>UPI</option>
+                    <option value="card" {% if expense.payment_method == "card" %}selected{% endif %}>Card</option>
+                    <option value="bank" {% if expense.payment_method == "bank" %}selected{% endif %}>Bank Transfer</option>
+                </select>
+
+                <label>Notes</label>
+                <textarea name="notes"
+                          class="edit-textarea"
+                          {% if expense.status != "pending" %}readonly{% endif %}>
+{{ expense.notes }}
+                </textarea>
+            </div>
+
+            <!-- SAVE BUTTON -->
+            {% if expense.status == "pending" %}
+                <button type="submit" class="save-btn">Save Changes</button>
+            {% else %}
+                <button type="button"
+                        class="save-btn"
+                        style="background:#ccc; cursor:not-allowed;"
+                        disabled>
+                    Expense Locked
+                </button>
+            {% endif %}
+        </form>
+
+    </div>
+</div>
+
+</body>
+</html>

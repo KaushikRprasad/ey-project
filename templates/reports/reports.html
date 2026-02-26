@@ -1,0 +1,419 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Reports</title>
+  <link rel="stylesheet" href="{% static 'reports/css/style.css' %}?v=9">
+  
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+</head>
+<body>
+
+<div class="sidebar">
+    <h2>FinSight</h2>
+    <div class="sidebar-line"></div>
+     <div class="sidbar-a-container"> 
+    <a href="/dashboard/" ><svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M18.6162 12.752C20.203 12.7569 21.4903 14.0657 21.5 15.6855V18.5566C21.4904 20.178 20.2045 21.4902 18.6162 21.5H15.8037C14.217 21.49 12.9345 20.1765 12.9297 18.5566V15.6855C12.9298 14.0652 14.2165 12.7521 15.8037 12.752H18.6162ZM6.53809 12.752C6.8334 12.7197 7.12077 12.8621 7.27832 13.1191C7.43575 13.3761 7.43573 13.702 7.27832 13.959C7.12077 14.216 6.8334 14.3584 6.53809 14.3262H5.38281C4.64627 14.3263 4.0479 14.9337 4.04297 15.6855V18.5205C4.0617 19.2664 4.65204 19.8656 5.38281 19.8799H8.21289C8.5674 19.8823 8.9086 19.7403 9.16016 19.4854C9.41174 19.2302 9.55372 18.8825 9.55371 18.5205V14.2637C9.49624 13.9459 9.63323 13.6244 9.90039 13.4512C10.1679 13.2781 10.5124 13.2879 10.7695 13.4766C11.0265 13.6652 11.1457 13.9947 11.0703 14.3086V18.5479C11.0703 20.1733 9.7788 21.4912 8.18652 21.4912H5.38281C3.80442 21.4576 2.53275 20.1592 2.5 18.5479V15.6855C2.50004 14.9059 2.80383 14.1579 3.34473 13.6074C3.8856 13.057 4.6191 12.7496 5.38281 12.752H6.53809ZM15.8037 14.3262C15.0686 14.3263 14.4727 14.9351 14.4727 15.6855V18.5566C14.4703 18.9178 14.6102 19.2651 14.8604 19.5205C15.1105 19.7757 15.4501 19.9184 15.8037 19.916H18.6162C18.97 19.9184 19.3104 19.7759 19.5605 19.5205C19.8107 19.2651 19.9506 18.9178 19.9482 18.5566V15.6855C19.9482 15.3251 19.8073 14.9795 19.5576 14.7246C19.308 14.4698 18.9692 14.3262 18.6162 14.3262H15.8037ZM18.6172 2.5C20.1921 2.53831 21.4586 3.83544 21.4912 5.44336V8.30566C21.5005 9.08362 21.207 9.83371 20.6748 10.3906C20.1424 10.9476 19.4146 11.2659 18.6523 11.2754H17.4883C17.0942 11.2323 16.7951 10.8929 16.7949 10.4883C16.7949 10.0835 17.0941 9.74333 17.4883 9.7002H18.6172C18.9741 9.69776 19.3156 9.55018 19.5654 9.29004C19.8152 9.02989 19.9529 8.67869 19.9482 8.31445V5.44336C19.9387 4.6969 19.3484 4.09381 18.6172 4.08398H15.8047C15.0694 4.08398 14.4727 4.69276 14.4727 5.44336V9.73633C14.4583 10.1716 14.1063 10.5158 13.6797 10.5107C13.4747 10.5061 13.2795 10.4178 13.1387 10.2656C12.9979 10.1134 12.9226 9.90942 12.9297 9.7002V5.44336C12.9273 4.66363 13.2293 3.91451 13.7686 3.3623C14.3078 2.8101 15.0409 2.5 15.8047 2.5H18.6172ZM8.19531 2.5C9.78557 2.50494 11.0743 3.81995 11.0791 5.44336V8.31445C11.0791 9.09415 10.7743 9.84209 10.2334 10.3926C9.69249 10.9429 8.95899 11.2504 8.19531 11.248H5.38281C3.79614 11.243 2.50975 9.93419 2.5 8.31445V5.44336C2.50963 3.82207 3.79466 2.50996 5.38281 2.5H8.19531ZM5.38379 4.08398C5.02614 4.07673 4.68023 4.21699 4.4248 4.47266C4.16947 4.72831 4.02532 5.07825 4.02539 5.44336V8.31445C4.01816 8.6842 4.15889 9.04121 4.41504 9.30273C4.67126 9.5643 5.0215 9.70762 5.38379 9.7002H8.19629C8.55314 9.69774 8.89468 9.55017 9.14453 9.29004C9.39428 9.02989 9.532 8.67867 9.52734 8.31445V5.44336C9.52254 4.69492 8.92941 4.08907 8.19629 4.08398H5.38379Z" fill="white"/>
+</svg>
+Dashboard</a>
+    <a href="/list/"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M12 9.7998V19.9998M12 9.7998C12 8.11965 12 7.27992 12.327 6.63818C12.6146 6.0737 13.0732 5.6146 13.6377 5.32698C14.2794 5 15.1196 5 16.7998 5H19.3998C19.9599 5 20.2401 5 20.454 5.10899C20.6422 5.20487 20.7948 5.35774 20.8906 5.5459C20.9996 5.75981 21 6.04004 21 6.6001V15.4001C21 15.9601 20.9996 16.2398 20.8906 16.4537C20.7948 16.6419 20.6425 16.7952 20.4543 16.8911C20.2406 17 19.961 17 19.402 17H16.5693C15.6301 17 15.1597 17 14.7334 17.1295C14.356 17.2441 14.0057 17.4317 13.701 17.6821C13.3568 17.965 13.096 18.3557 12.575 19.1372L12 19.9998M12 9.7998C12 8.11965 11.9998 7.27992 11.6729 6.63818C11.3852 6.0737 10.9263 5.6146 10.3618 5.32698C9.72004 5 8.87977 5 7.19961 5H4.59961C4.03956 5 3.75981 5 3.5459 5.10899C3.35774 5.20487 3.20487 5.35774 3.10899 5.5459C3 5.75981 3 6.04004 3 6.6001V15.4001C3 15.9601 3 16.2398 3.10899 16.4537C3.20487 16.6419 3.35774 16.7952 3.5459 16.8911C3.7596 17 4.03901 17 4.59797 17H7.43073C8.36994 17 8.83942 17 9.26569 17.1295C9.64306 17.2441 9.99512 17.4317 10.2998 17.6821C10.6426 17.9638 10.9017 18.3526 11.4185 19.1277L12 19.9998" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+Invoices</a>
+    <a href="/expenses/" ><svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M20.0005 7L14.1543 12.9375C14.0493 13.0441 13.9962 13.0976 13.9492 13.1396C13.1899 13.8193 12.0416 13.8193 11.2822 13.1396C11.2352 13.0976 11.1817 13.0442 11.0767 12.9375C10.9716 12.8308 10.9191 12.7774 10.8721 12.7354C10.1127 12.0557 8.96397 12.0557 8.20461 12.7354C8.15771 12.7773 8.10532 12.8305 8.00078 12.9367L4 17M20.0005 7L20 13M20.0005 7H14" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+Expenses</a>
+
+
+    <a href="/reports/" class="active"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M9 17H15M9 14H15M13.0004 3.00087C12.9048 3 12.7974 3 12.6747 3H8.2002C7.08009 3 6.51962 3 6.0918 3.21799C5.71547 3.40973 5.40973 3.71547 5.21799 4.0918C5 4.51962 5 5.08009 5 6.2002V17.8002C5 18.9203 5 19.4801 5.21799 19.9079C5.40973 20.2842 5.71547 20.5905 6.0918 20.7822C6.51921 21 7.079 21 8.19694 21L15.8031 21C16.921 21 17.48 21 17.9074 20.7822C18.2837 20.5905 18.5905 20.2842 18.7822 19.9079C19 19.4805 19 18.9215 19 17.8036V9.32568C19 9.20302 18.9999 9.09553 18.999 9M13.0004 3.00087C13.2858 3.00348 13.4657 3.01407 13.6382 3.05547C13.8423 3.10446 14.0379 3.18526 14.2168 3.29492C14.4186 3.41857 14.5918 3.59181 14.9375 3.9375L18.063 7.06298C18.4089 7.40889 18.5809 7.58136 18.7046 7.78319C18.8142 7.96214 18.8953 8.15726 18.9443 8.36133C18.9857 8.53379 18.9964 8.71454 18.999 9M13.0004 3.00087L13 5.80021C13 6.92031 13 7.48015 13.218 7.90797C13.4097 8.2843 13.7155 8.59048 14.0918 8.78223C14.5192 9 15.079 9 16.1969 9H18.999" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+Reports</a>
+    {% if request.user.role == "admin" or request.user.role == "superadmin" %}
+<a href="{% url 'invoices:company_employees' %}">
+   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M21 19.9999C21 18.2583 19.3304 16.7767 17 16.2275M15 20C15 17.7909 12.3137 16 9 16C5.68629 16 3 17.7909 3 20M15 13C17.2091 13 19 11.2091 19 9C19 6.79086 17.2091 5 15 5M9 13C6.79086 13 5 11.2091 5 9C5 6.79086 6.79086 5 9 5C11.2091 5 13 6.79086 13 9C13 11.2091 11.2091 13 9 13Z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+Employees
+</a>
+{% endif %}
+    <a href="/accounts/profile/"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M20.3499 8.92293L19.9837 8.7192C19.9269 8.68756 19.8989 8.67169 19.8714 8.65524C19.5983 8.49165 19.3682 8.26564 19.2002 7.99523C19.1833 7.96802 19.1674 7.93949 19.1348 7.8831C19.1023 7.82677 19.0858 7.79823 19.0706 7.76998C18.92 7.48866 18.8385 7.17515 18.8336 6.85606C18.8331 6.82398 18.8332 6.79121 18.8343 6.72604L18.8415 6.30078C18.8529 5.62025 18.8587 5.27894 18.763 4.97262C18.6781 4.70053 18.536 4.44993 18.3462 4.23725C18.1317 3.99685 17.8347 3.82534 17.2402 3.48276L16.7464 3.1982C16.1536 2.85658 15.8571 2.68571 15.5423 2.62057C15.2639 2.56294 14.9765 2.56561 14.6991 2.62789C14.3859 2.69819 14.0931 2.87351 13.5079 3.22396L13.5045 3.22555L13.1507 3.43741C13.0948 3.47091 13.0665 3.48779 13.0384 3.50338C12.7601 3.6581 12.4495 3.74365 12.1312 3.75387C12.0992 3.7549 12.0665 3.7549 12.0013 3.7549C11.9365 3.7549 11.9024 3.7549 11.8704 3.75387C11.5515 3.74361 11.2402 3.65759 10.9615 3.50224C10.9334 3.48658 10.9056 3.46956 10.8496 3.4359L10.4935 3.22213C9.90422 2.86836 9.60915 2.69121 9.29427 2.62057C9.0157 2.55807 8.72737 2.55634 8.44791 2.61471C8.13236 2.68062 7.83577 2.85276 7.24258 3.19703L7.23994 3.1982L6.75228 3.48124L6.74688 3.48454C6.15904 3.82572 5.86441 3.99672 5.6517 4.23614C5.46294 4.4486 5.32185 4.69881 5.2374 4.97018C5.14194 5.27691 5.14703 5.61896 5.15853 6.3027L5.16568 6.72736C5.16676 6.79166 5.16864 6.82362 5.16817 6.85525C5.16343 7.17499 5.08086 7.48914 4.92974 7.77096C4.9148 7.79883 4.8987 7.8267 4.86654 7.88237C4.83436 7.93809 4.81877 7.96579 4.80209 7.99268C4.63336 8.26452 4.40214 8.49186 4.12733 8.65572C4.10015 8.67193 4.0715 8.68752 4.01521 8.71871L3.65365 8.91908C3.05208 9.25245 2.75137 9.41928 2.53256 9.65669C2.33898 9.86672 2.19275 10.1158 2.10349 10.3872C2.00259 10.6939 2.00267 11.0378 2.00424 11.7255L2.00551 12.2877C2.00706 12.9708 2.00919 13.3122 2.11032 13.6168C2.19979 13.8863 2.34495 14.134 2.53744 14.3427C2.75502 14.5787 3.05274 14.7445 3.64974 15.0766L4.00808 15.276C4.06907 15.3099 4.09976 15.3266 4.12917 15.3444C4.40148 15.5083 4.63089 15.735 4.79818 16.0053C4.81625 16.0345 4.8336 16.0648 4.8683 16.1255C4.90256 16.1853 4.92009 16.2152 4.93594 16.2452C5.08261 16.5229 5.16114 16.8315 5.16649 17.1455C5.16707 17.1794 5.16658 17.2137 5.16541 17.2827L5.15853 17.6902C5.14695 18.3763 5.1419 18.7197 5.23792 19.0273C5.32287 19.2994 5.46484 19.55 5.65463 19.7627C5.86915 20.0031 6.16655 20.1745 6.76107 20.5171L7.25478 20.8015C7.84763 21.1432 8.14395 21.3138 8.45869 21.379C8.73714 21.4366 9.02464 21.4344 9.30209 21.3721C9.61567 21.3017 9.90948 21.1258 10.4964 20.7743L10.8502 20.5625C10.9062 20.5289 10.9346 20.5121 10.9626 20.4965C11.2409 20.3418 11.5512 20.2558 11.8695 20.2456C11.9015 20.2446 11.9342 20.2446 11.9994 20.2446C12.0648 20.2446 12.0974 20.2446 12.1295 20.2456C12.4484 20.2559 12.7607 20.3422 13.0394 20.4975C13.0639 20.5112 13.0885 20.526 13.1316 20.5519L13.5078 20.7777C14.0971 21.1315 14.3916 21.3081 14.7065 21.3788C14.985 21.4413 15.2736 21.4438 15.5531 21.3855C15.8685 21.3196 16.1657 21.1471 16.7586 20.803L17.2536 20.5157C17.8418 20.1743 18.1367 20.0031 18.3495 19.7636C18.5383 19.5512 18.6796 19.3011 18.764 19.0297C18.8588 18.7252 18.8531 18.3858 18.8417 17.7119L18.8343 17.2724C18.8332 17.2081 18.8331 17.1761 18.8336 17.1445C18.8383 16.8247 18.9195 16.5104 19.0706 16.2286C19.0856 16.2007 19.1018 16.1726 19.1338 16.1171C19.166 16.0615 19.1827 16.0337 19.1994 16.0068C19.3681 15.7349 19.5995 15.5074 19.8744 15.3435C19.9012 15.3275 19.9289 15.3122 19.9838 15.2818L19.9857 15.2809L20.3472 15.0805C20.9488 14.7472 21.2501 14.5801 21.4689 14.3427C21.6625 14.1327 21.8085 13.8839 21.8978 13.6126C21.9981 13.3077 21.9973 12.9658 21.9958 12.2861L21.9945 11.7119C21.9929 11.0287 21.9921 10.6874 21.891 10.3828C21.8015 10.1133 21.6555 9.86561 21.463 9.65685C21.2457 9.42111 20.9475 9.25526 20.3517 8.92378L20.3499 8.92293Z" stroke="#FFff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M8.00033 12C8.00033 14.2091 9.79119 16 12.0003 16C14.2095 16 16.0003 14.2091 16.0003 12C16.0003 9.79082 14.2095 7.99996 12.0003 7.99996C9.79119 7.99996 8.00033 9.79082 8.00033 12Z" stroke="#fff
+" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+
+
+Profile</a>
+
+{% if request.user.role == "admin" %}
+    <a href="{% url 'upgrade_plan' %}"><svg width="90" height="90" viewBox="0 0 90 90" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<rect width="90" height="90" fill="url(#pattern0_94_208)"/>
+<defs>
+<pattern id="pattern0_94_208" patternContentUnits="objectBoundingBox" width="1" height="1">
+<use xlink:href="#image0_94_208" transform="scale(0.0111111)"/>
+</pattern>
+<image id="image0_94_208" width="90" height="90" preserveAspectRatio="none" xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFoAAABaCAYAAAA4qEECAAAACXBIWXMAAAsTAAALEwEAmpwYAAADh0lEQVR4nO2cP0hVURjAn2gZYhJu/aEpBScXG8MG21oFm0Np0IIass2xqKWhwcbIBtfGIiOqZzS8lsBora0Me2VQ0S8OnuAmej3nnu/cf+/7gSB6Pff7fu/63vd9h3sbDUVRFEVRFMUC9AIXgVXgm/0y38+Z3/07TgkAOAq8YXda5piQc3Q8bF3JaZKTsvXKzop9u3BlNvOJOh3glYfoZtHxVhag7SG6XXS8lQVY9xD9ueh4KwvwwkP086LjrSzAjIfo80XHW/XybtVBchPYX3S8lQY4sodsI/lw0XHWAmAA+L6DZPOzgaLjqw3AtZQrer7o+GoBcMiUbimivwCDRcdZeYAbDh+G1xtVpCxjSbYmd5sOojfznOCJ+CnTWBJYxJ3FnGIK91OmsSQwDPzyEG2OHY4ck4yfMo0lgWX8WY4ck4yfsowlgTHgTwbR5m/GIsYl46csY0ngMdl5GjEuGT+eC61HSuYM4UyUYGy7IfWvIT6WBLqA14Rj1ugqeGyb+tZh6kBXpiMkMokckxHim5b6MOy1pYkLz4BRwSR6gHfIYdbqEYxv1ObsQmvPsa0tyF1l/wbuSMwa8BvyuzIjENegzdHk6oJ7Q2deDXPp21lv26HU+gRcALozJtMHfEQes2Zfxpi6bU4mt70wjl5aZ9k3IIBzHq/mqQzrzxOPqxniOelRGEz5rp924tOeyT0EjguNQUNxHqOanRrgnmezNB4seNvcwRez+7EAHBAYg4aSOkYF9gGXTO2bYe0hSdH9AUm+B86m7AfutEUlzQ/g2C4xTABvA9buFxNtA/oamOwjYGTbmnfJj//GqMCJjIMrt+4vQLREjfsTuA0czDAGDcWUZyO2wlmwV3koazFEryDHB1s65k3TnluKlRiilwQDrAv3Y4i+VXRWJeRmDNFXis6qhFyOIdq1O+wkpmKI9u0OO4HxGKKzdId1ZyiG6JDusK7IdoWC3WGdkO8KE6Ild0CqzlpM0ZLdYdV5ElP0g6KzKxFLMUVrdxizK0yI1u4wZleYEK3dYcyuMCFau8OYXWFCtHaHMbvChGjtDmN3hYqiKIqiKPmSKG86moaKzgcVnRMqOidUdE6o6BqJ9rm7tq5s5CHa5+7autLMQ7TPoxTqymweol0fDlJXWrk9zNDceNOhslu5P33dXtlzibtr60pb5K5YRVEURVEURVEURVEURVGURkfzF0gMyKONeygfAAAAAElFTkSuQmCC"/>
+</defs>
+</svg>
+Upgrade Plan</a>
+{% endif %}
+</div>
+<div class="sidebar-bottomline"></div>
+<a href="{% url 'logout' %}" class="logout">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M2 12L1.21913 11.3753L0.719375 12L1.21913 12.6247L2 12ZM11 13C11.5523 13 12 12.5523 12 12C12 11.4477 11.5523 11 11 11V12V13ZM6 7L5.21913 6.3753L1.21913 11.3753L2 12L2.78087 12.6247L6.78087 7.6247L6 7ZM2 12L1.21913 12.6247L5.21913 17.6247L6 17L6.78087 16.3753L2.78087 11.3753L2 12ZM2 12V13H11V12V11H2V12Z" fill="#D4AF37"/>
+<path d="M10 8.13193V7.38851C10 5.77017 10 4.961 10.474 4.4015C10.9479 3.84201 11.7461 3.70899 13.3424 3.44293L15.0136 3.1644C18.2567 2.62388 19.8782 2.35363 20.9391 3.25232C22 4.15102 22 5.79493 22 9.08276V14.9172C22 18.2051 22 19.849 20.9391 20.7477C19.8782 21.6464 18.2567 21.3761 15.0136 20.8356L13.3424 20.5571C11.7461 20.291 10.9479 20.158 10.474 19.5985C10 19.039 10 18.2298 10 16.6115V16.066" stroke="#FFCD07" stroke-width="2"/>
+</svg>
+
+Logout</a>
+  </div>
+
+<div class="content">
+  <h1>Reports</h1>
+    <div class="sub-header">Track and analyze your financial data</div>
+
+     <div class="title-actions">
+      <button id="downloadPdfBtn" class="btn">Download PDF</button>
+      <button id="exportExcelBtn" class="export-btn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M6 21H18M12 3V17M12 17L17 12M12 17L7 12" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>Export Excel</button>
+    </div>
+
+    <div class="header-Line"></div>
+
+  
+
+  <form method="GET" class="filter-box">
+      <div class="quick-filters">
+    <button class="quick" data-range="today">Today</button>
+    <button class="quick" data-range="this_month">This Month</button>
+    <button class="quick" data-range="last_month">Last Month</button>
+  </div>
+    <div><input type="date" name="start" value="{{ start }}"></div>
+    <div><input type="date" name="end" value="{{ end }}"></div>
+    <button type="submit" class="btn primary">Filter</button>
+  </form>
+
+  <div class="stats-outer">
+    <div class="stats">
+      <div class="card stat-card">
+        <small>Total Invoices</small>
+        <h2 class="stat" data-target="{{ total_invoices }}">₹0</h2>
+      </div>
+      <div class="card stat-card">
+        <small>Total Expenses</small>
+        <h2 class="stat" data-target="{{ total_expenses }}">₹0</h2>
+      </div>
+      <div class="card stat-card">
+        <small>Net Balance</small>
+        <h2 class="stat" data-target="{{ net_balance }}">₹0</h2>
+      </div>
+    </div>
+
+    <div class="insights">
+      <div class="insight card">Avg Invoice / day: <strong>₹{{ avg_invoice_per_day }}</strong></div>
+      <div class="insight card">Avg Expense / day: <strong>₹{{ avg_expense_per_day }}</strong></div>
+      <div class="insight card">Biggest Expense Category: <strong>{{ biggest_expense_category|default:"N/A" }}</strong></div>
+      <div class="insight card">Best Invoice Date: <strong>{{ best_date|default:"N/A" }}</strong></div>
+    </div>
+  </div>
+
+  <div class="charts">
+    <div class="chart-card">
+      <h3>📊 Invoice vs Expense Trend</h3>
+      <canvas id="trendChart"></canvas>
+    </div>
+
+    <div class="chart-card">
+      <h3>📈 Monthly Revenue vs Expenses</h3>
+      <canvas id="barChart"></canvas>
+    </div>
+
+    <div class="chart-card small">
+      <h3>📌 Category Expense Breakdown</h3>
+      <canvas id="categoryChart"></canvas>
+    </div>
+  </div>
+
+ <div class="table-card fade-up">
+  <h3>Detailed Records</h3>
+
+  <table id="recordsTable" class="modern-table">
+    <thead>
+      <tr>
+        <th>Date</th>
+        <th>Type</th>
+        <th>Title / Invoice</th>
+        <th>Category / Vendor</th>
+        <th>Payment</th>
+        <th>Status</th>
+        <th class="text-right">Amount</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      {% for item in combined %}
+      <tr>
+
+        <td>{{ item.date|date:"M d, Y" }}</td>
+
+        <!-- TYPE BADGE -->
+        <td>
+          {% if item.type == "Invoice" %}
+            <span class="badge invoice">Invoice</span>
+          {% else %}
+            <span class="badge expense">Expense</span>
+          {% endif %}
+        </td>
+
+        <td class="title-cell">
+          {{ item.title }}
+        </td>
+
+        <td>
+          {{ item.category_or_vendor|default:"-" }}
+        </td>
+
+        <td class="capitalize">
+          {{ item.payment_method|default:"-" }}
+        </td>
+
+        <td>
+          {% if item.status|lower == "paid" or item.status|lower == "confirmed" %}
+            <span class="status success">Paid</span>
+          {% elif item.status|lower == "cancelled" %}
+            <span class="status danger">Cancelled</span>
+          {% else %}
+            <span class="status pending">Pending</span>
+          {% endif %}
+        </td>
+
+        <td class="amount text-right">
+          ₹{{ item.amount|floatformat:2 }}
+        </td>
+
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="7" class="no-data">No records found</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+</div>
+
+<script>
+
+function animateCount(el, target) {
+  const prefix = el.textContent.trim().startsWith("₹") ? "₹" : "";
+  let start = 0;
+  const duration = 1100;
+  const stepTime = 16;
+  const steps = Math.ceil(duration / stepTime);
+  const increment = (target - start) / steps;
+  let current = start;
+  let i = 0;
+  const timer = setInterval(()=> {
+    current += increment;
+    i++;
+    if (i >= steps) {
+      clearInterval(timer);
+      el.textContent = prefix + Number(target).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+    } else {
+      el.textContent = prefix + Number(current).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+    }
+  }, stepTime);
+}
+
+document.querySelectorAll('.stat').forEach(el=>{
+  const target = parseFloat(el.getAttribute('data-target') || 0) || 0;
+  animateCount(el, target);
+});
+
+document.querySelectorAll('.quick').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    const range = btn.dataset.range;
+    const startInput = document.querySelector('input[name="start"]');
+    const endInput = document.querySelector('input[name="end"]');
+    const today = new Date();
+    if (range === 'today') {
+      const s = today.toISOString().slice(0,10);
+      startInput.value = s; endInput.value = s;
+    } else if (range === 'this_month') {
+      const s = new Date(today.getFullYear(), today.getMonth(), 1).toISOString().slice(0,10);
+      startInput.value = s; endInput.value = today.toISOString().slice(0,10);
+    } else if (range === 'last_month') {
+      const firstDayLast = new Date(today.getFullYear(), today.getMonth()-1, 1);
+      const lastDayLast = new Date(today.getFullYear(), today.getMonth(), 0);
+      startInput.value = firstDayLast.toISOString().slice(0,10);
+      endInput.value = lastDayLast.toISOString().slice(0,10);
+    }
+  });
+});
+
+
+const trendCtx = document.getElementById('trendChart').getContext('2d');
+const barCtx = document.getElementById('barChart').getContext('2d');
+const catCtx = document.getElementById('categoryChart').getContext('2d');
+
+const invGrad = trendCtx.createLinearGradient(0,0,0,400);
+invGrad.addColorStop(0, 'rgba(76,175,80,0.45)');
+invGrad.addColorStop(1, 'rgba(76,175,80,0)');
+
+const expGrad = trendCtx.createLinearGradient(0,0,0,400);
+expGrad.addColorStop(0, 'rgba(244,67,54,0.45)');
+expGrad.addColorStop(1, 'rgba(244,67,54,0)');
+
+const trendChart = new Chart(trendCtx, {
+  type: 'line',
+  data: {
+    labels: {{ labels|safe }},
+    datasets: [
+      {
+        label: 'Invoices',
+        data: {{ invoice_data|safe }},
+        borderColor: '#4caf50',
+        backgroundColor: invGrad,
+        tension: 0.4,
+        pointRadius: 4,
+        borderWidth: 3,
+        fill: true
+      },
+      {
+        label: 'Expenses',
+        data: {{ expense_data|safe }},
+        borderColor: '#f44336',
+        backgroundColor: expGrad,
+        tension: 0.4,
+        pointRadius: 4,
+        borderWidth: 3,
+        fill: true
+      }
+    ]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: { legend: { position: 'top' } },
+    scales: { y: { grid: { color: 'rgba(0,0,0,0.05)' } } }
+  }
+});
+
+const barChart = new Chart(barCtx, {
+  type: 'bar',
+  data: {
+    labels: {{ month_labels|safe }},
+    datasets: [
+      { label: 'Revenue', data: {{ month_invoice_data|safe }}, backgroundColor: '#42A5F5' },
+      { label: 'Expenses', data: {{ month_expense_data|safe }}, backgroundColor: '#FFA726' }
+    ]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: { legend: { position: 'top' } }
+  }
+});
+
+const categoryChart = new Chart(catCtx, {
+  type: 'pie',
+  data: {
+    labels: {{ category_labels|safe }},
+    datasets: [{
+      data: {{ category_values|safe }},
+      backgroundColor: ['#42A5F5','#66BB6A','#FFA726','#AB47BC','#26C6DA'],
+      borderWidth: 1,
+      borderColor: '#ffffff'
+    }]
+  },
+  options: { responsive: true, maintainAspectRatio: false, plugins:{legend:{position:'bottom'}}}
+});
+
+document.getElementById('downloadPdfBtn').addEventListener('click', async () => {
+
+  const element = document.querySelector('.content');
+  const { jsPDF } = window.jspdf;
+
+  const canvas = await html2canvas(element, {
+    scale: 2,
+    useCORS: true,
+    scrollY: -window.scrollY
+  });
+
+  const imgData = canvas.toDataURL('image/png');
+  const pdf = new jsPDF('p', 'mm', 'a4');
+
+  const pageWidth = pdf.internal.pageSize.getWidth();
+  const pageHeight = pdf.internal.pageSize.getHeight();
+
+  const imgWidth = pageWidth;
+  const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+  let heightLeft = imgHeight;
+  let position = 0;
+
+  pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+  heightLeft -= pageHeight;
+
+  while (heightLeft > 0) {
+    position = heightLeft - imgHeight;
+    pdf.addPage();
+    pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+    heightLeft -= pageHeight;
+  }
+
+  pdf.save('FinSight_Report.pdf');
+});
+
+document.getElementById('exportExcelBtn').addEventListener('click', () => {
+
+  const table = document.getElementById("recordsTable");
+  const rows = table.querySelectorAll("tr");
+
+  const ws_data = [];
+
+  rows.forEach(row => {
+    const cols = row.querySelectorAll("th, td");
+    const rowData = [];
+
+    cols.forEach(col => {
+      let text = col.innerText.replace("₹", "").trim();
+      rowData.push(text);
+    });
+
+    ws_data.push(rowData);
+  });
+
+  const wb = XLSX.utils.book_new();
+  const ws = XLSX.utils.aoa_to_sheet(ws_data);
+
+  // Auto column width
+  ws['!cols'] = ws_data[0].map((_, colIndex) => ({
+    wch: Math.max(...ws_data.map(row => row[colIndex]?.length || 10))
+  }));
+
+  XLSX.utils.book_append_sheet(wb, ws, "Finance Report");
+  XLSX.writeFile(wb, "FinSight_Report.xlsx");
+
+});
+
+document.querySelectorAll('.fade-up').forEach(el=>{
+  el.style.opacity = 0;
+  el.style.transform = 'translateY(8px)';
+  setTimeout(()=> {
+    el.style.transition = 'opacity 600ms ease, transform 600ms ease';
+    el.style.opacity = 1;
+    el.style.transform = 'translateY(0)';
+  }, 200);
+});
+</script>
+</body>
+</html>

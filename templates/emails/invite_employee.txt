@@ -1,0 +1,12 @@
+Hello {{ username }},
+
+You have been added to {{ company }} on FinSight.
+
+Click the link below to set your password:
+
+{{ reset_link }}
+
+If you did not expect this email, please ignore it.
+
+Thanks,
+FinSight Team

@@ -1,0 +1,197 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Choose Your Plan - FinSight</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', sans-serif;
+            background: #000;
+            color: white;
+            text-align: center;
+        }
+
+        h1 {
+            margin-top: 60px;
+            font-size: 40px;
+            font-weight: 700;
+        }
+
+        .subtitle {
+            color: #aaa;
+            margin-bottom: 50px;
+        }
+
+        .plan-container {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+            padding: 0 20px 80px;
+        }
+
+        .plan-card {
+            background: #111;
+            border-radius: 16px;
+            padding: 40px 30px;
+            width: 300px;
+            transition: 0.3s ease;
+            border: 1px solid #222;
+            position: relative;
+        }
+
+        .plan-card:hover {
+            transform: scale(1.05);
+        }
+
+        .recommended {
+            border: 2px solid #D4AF37;
+            transform: scale(1.08);
+        }
+
+        .recommended-badge {
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #D4AF37;
+            color: black;
+            padding: 5px 15px;
+            font-size: 12px;
+            border-radius: 20px;
+            font-weight: bold;
+        }
+
+        .plan-name {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        .plan-price {
+            font-size: 36px;
+            font-weight: bold;
+            margin-bottom: 25px;
+        }
+
+        .plan-price span {
+            font-size: 16px;
+            color: #aaa;
+        }
+
+        .plan-features {
+            text-align: left;
+            margin-bottom: 30px;
+        }
+
+        .plan-features li {
+            list-style: none;
+            padding: 8px 0;
+            border-bottom: 1px solid #222;
+            font-size: 14px;
+        }
+
+        .plan-features li::before {
+            content: "✔ ";
+            color: #D4AF37;
+        }
+
+        .upgrade-btn {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            background: #D4AF37;
+            color: black;
+            font-weight: bold;
+            text-decoration: none;
+            display: inline-block;
+            transition: 0.2s;
+        }
+
+        .upgrade-btn:hover {
+            background: #c9a52f;
+        }
+
+        .current-btn {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            background: #333;
+            color: #777;
+            border: none;
+            cursor: not-allowed;
+        }
+        .back-container {
+    position: absolute;
+    top: 20px;
+    left: 30px;
+}
+
+.back-btn {
+    text-decoration: none;
+    color: #D4AF37;
+    font-weight: 600;
+    font-size: 14px;
+    transition: 0.2s;
+}
+
+.back-btn:hover {
+    opacity: 0.8;
+}
+
+    </style>
+</head>
+
+<body>
+
+<h1>Choose Your Plan</h1>
+<p class="subtitle">Upgrade to unlock powerful features </p>
+<div class="back-container">
+    <a href="javascript:history.back()" class="back-btn">
+    ← Go Back
+</a>
+</div>
+<div class="plan-container">
+
+{% for plan in plans %}
+    <div class="plan-card 
+        {% if plan.name == 'Pro' %}recommended{% endif %}
+        {% if plan == current_plan %}recommended{% endif %}">
+
+        {% if plan.name == 'Pro' %}
+            <div class="recommended-badge">RECOMMENDED</div>
+        {% endif %}
+
+        <div class="plan-name">{{ plan.name }}</div>
+
+        <div class="plan-price">
+            ₹{{ plan.price }}
+            <span>/month</span>
+        </div>
+
+        <ul class="plan-features">
+            <li>{{ plan.invoice_limit }} Invoices</li>
+            <li>{{ plan.expense_limit }} Expenses</li>
+            <li>{{ plan.employee_limit }} Employees</li>
+            <li>Reports: {{ plan.allow_reports|yesno:"Yes,No" }}</li>
+            <li>CSV Export: {{ plan.allow_export|yesno:"Yes,No" }}</li>
+            <li>OCR Extraction: {{ plan.allow_ocr|yesno:"Yes,No" }}</li>
+        </ul>
+
+        {% if plan != current_plan %}
+            <a href="{% url 'activate_plan' plan.id %}" class="upgrade-btn">
+                Choose Plan
+            </a>
+        {% else %}
+            <button class="current-btn">Current Plan</button>
+        {% endif %}
+
+    </div>
+{% endfor %}
+
+</div>
+
+</body>
+</html>
